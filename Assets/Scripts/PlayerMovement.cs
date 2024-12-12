@@ -40,7 +40,7 @@ public class PlayerMovement : NetworkBehaviour
 
     private Vector3 GetDirection(float horizontalInput, float verticalInput)
     {
-        Vector3 vertical = cameraMovement.orientation.transform.forward * verticalInput;
+        Vector3 vertical = verticalInput * cameraMovement.orientation.transform.forward;
         Vector3 horizontal = horizontalInput * cameraMovement.orientation.transform.right;
 
         Vector3 moveDir = (vertical + horizontal).normalized;

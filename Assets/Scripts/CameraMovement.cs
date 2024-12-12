@@ -34,7 +34,7 @@ public class CameraMovement : NetworkBehaviour
             return;
 
         Vector3 rot = transform.localRotation.eulerAngles;
-        float yaw = mouseMovement.x *sensitivity * sensMultiplier * Time.deltaTime % 360f;
+        float yaw = mouseMovement.x * sensitivity * sensMultiplier * Time.deltaTime % 360f;
         float pitch = mouseMovement.y * sensitivity * sensMultiplier * Time.deltaTime % 360f;
 
         desiredX = rot.y + yaw;
@@ -48,6 +48,9 @@ public class CameraMovement : NetworkBehaviour
 
     private void Update()
     {
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+
         MouseMovement();
 
         transform.position = head.position;
