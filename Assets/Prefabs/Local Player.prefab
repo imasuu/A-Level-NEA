@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 804588999978863272}
   - component: {fileID: 1273695776930963473}
   m_Layer: 0
-  m_Name: Player
+  m_Name: Local Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -152,7 +152,7 @@ MonoBehaviour:
   _teleportThreshold: 1
   <PrefabId>k__BackingField: 65535
   <SpawnableCollectionId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 7807759643866311769
+  <AssetPathHash>k__BackingField: 7481808858637895707
   <SceneId>k__BackingField: 0
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}
@@ -282,7 +282,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: f15126ff6408544d285cc53e9cfecf23, type: 2}
+  - {fileID: 2100000, guid: 4b59fbfefca30d1f58df9876bdb4aff3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -400,7 +400,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: f15126ff6408544d285cc53e9cfecf23, type: 2}
+  - {fileID: 2100000, guid: 4b59fbfefca30d1f58df9876bdb4aff3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
