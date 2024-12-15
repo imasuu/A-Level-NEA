@@ -30,7 +30,8 @@ public class CameraMovement : NetworkBehaviour
 
     private void MouseMovement()
     {
-        if(!IsOwner)
+        // Ensure this is only applied to the local player
+        if (!IsOwner)
             return;
 
         Vector3 rot = transform.localRotation.eulerAngles;
@@ -42,23 +43,32 @@ public class CameraMovement : NetworkBehaviour
 
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-        //reset mouse movement when not moving
+        // Reset mouse movement after processing it
         mouseMovement = Vector2.zero;
     }
 
     private void Update()
     {
+        // Only the local player should manipulate the camera and cursor
+        if (!IsOwner)
+            return;
+
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
 
         MouseMovement();
 
+        // Update head tracking and orientation for the local player
         transform.position = head.position;
         orientation.localRotation = Quaternion.Euler(0, desiredX, 0);
     }
 
     private void LateUpdate()
     {
-        transform.localRotation = Quaternion.Euler(xRotation, desiredX, 0);
+        // Local camera rotation
+        if (IsOwner)
+        {
+            transform.localRotation = Quaternion.Euler(xRotation, desiredX, 0);
+        }
     }
 }

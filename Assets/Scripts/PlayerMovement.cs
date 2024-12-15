@@ -10,78 +10,88 @@ public class PlayerMovement : NetworkBehaviour
     public float jumpSpeed = 10f;
 
     private bool isGrounded = false;
-
     private Vector3 direction;
     private bool canJump;
 
+    // Handle horizontal input from player
     private float GetHorizontal()
     {
-        if(!IsOwner)
+        if (!IsOwner)
             return 0f;
 
         Keyboard keyboard = Keyboard.current;
-
-        float horizontalInput = keyboard.dKey.isPressed ? 1 : keyboard.aKey.isPressed ? -1 : 0;
-
-        return horizontalInput;
+        return keyboard.dKey.isPressed ? 1 : (keyboard.aKey.isPressed ? -1 : 0);
     }
 
+    // Handle vertical input from player
     private float GetVertical()
     {
-        if(!IsOwner)
+        if (!IsOwner)
             return 0f;
 
         Keyboard keyboard = Keyboard.current;
-
-        float verticalInput = keyboard.wKey.isPressed ? 1 : keyboard.sKey.isPressed ? -1 : 0;
-
-        return verticalInput;
+        return keyboard.wKey.isPressed ? 1 : (keyboard.sKey.isPressed ? -1 : 0);
     }
 
+    // Get direction for movement based on inputs and camera orientation
     private Vector3 GetDirection(float horizontalInput, float verticalInput)
     {
         Vector3 vertical = verticalInput * cameraMovement.orientation.transform.forward;
         Vector3 horizontal = horizontalInput * cameraMovement.orientation.transform.right;
 
-        Vector3 moveDir = (vertical + horizontal).normalized;
-
-        return moveDir;
+        return (vertical + horizontal).normalized;
     }
 
+    // Check if the player wants to jump (only if the player owns the object)
     private bool GetJump()
     {
-        Keyboard keyboard = Keyboard.current;
-
-        if (isGrounded && keyboard.spaceKey.wasPressedThisFrame)
-            return true;
-        else
+        if (!IsOwner || !isGrounded)
             return false;
+
+        Keyboard keyboard = Keyboard.current;
+        return keyboard.spaceKey.wasPressedThisFrame;
     }
 
-    private void Jump(bool canJump)
+    // Only the client that owns this object should send the jump request to the server
+    [ServerRpc]
+    private void JumpServerRpc()
     {
-        if (canJump)
-            rb.AddForce(transform.up * jumpSpeed, ForceMode.Impulse);
-        //variable jump height
+        rb.AddForce(transform.up * jumpSpeed, ForceMode.Impulse);
     }
 
-    private void MoveForce(Vector3 direction)
+    // Only the client with authority should request server to apply movement force
+    [ServerRpc]
+    private void MoveForceServerRpc(Vector3 direction)
     {
         rb.AddForce(direction * speed, ForceMode.Force);
     }
 
+    // Update is run once per frame, to gather input.
     private void Update()
     {
-        direction = GetDirection(GetHorizontal(), GetVertical());
-        canJump = GetJump();
+        // Only allow input if we are the owner
+        if (IsOwner)
+        {
+            direction = GetDirection(GetHorizontal(), GetVertical());
+            canJump = GetJump();
+        }
     }
 
+    // FixedUpdate is run in sync with the physics engine.
     private void FixedUpdate()
     {
-        MoveForce(direction);
-        Jump(canJump);
+        if (IsOwner)
+        {
+            // Request the server to apply movement and jumping forces.
+            MoveForceServerRpc(direction);
+            if (canJump)
+            {
+                JumpServerRpc();
+            }
+        }
     }
 
+    // Trigger detection for ground checking
     private void OnTriggerStay(Collider other)
     {
         isGrounded = true;
